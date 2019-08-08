@@ -229,6 +229,8 @@ ifneq ($(TARGET),nothing)
     endif
   endif # end not localhost
 
+  export TARGET_ARGS := "-march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard "
+
   # Target compiler variables
   export TARGET_CC                       ?= $(TOOLCHAIN_DIR)/$(TOOLCHAIN_PREFIX)$(CC_NAME)
   export TARGET_CXX                      ?= $(TOOLCHAIN_DIR)/$(TOOLCHAIN_PREFIX)$(CXX_NAME)
@@ -319,6 +321,8 @@ ifeq ($(LE_CONFIG_TEST_COVERAGE),y)
   export TEST_COVERAGE_DIR := $(LE_CONFIG_TEST_COVERAGE_DIR)
 endif
 
+MKSYS_FLAGS += -C $(TARGET_ARGS)
+
 # PlantUML file path
 PLANTUML_PATH ?= $(LEGATO_ROOT)/3rdParty/plantuml
 
@@ -363,7 +367,7 @@ FRAMEWORK_SOURCES = framework/                    \
 # Generator for making Legato systems
 define sysmk
 	$(L) MKSYS $(2)
-	$(Q)mksys -t $(TARGET) -w $(1) -o build/$(TARGET) $(2) $(3) $(MKSYS_FLAGS)
+	$(Q)mksys -v -t $(TARGET) -w $(1) -o build/$(TARGET) $(2) $(3) $(MKSYS_FLAGS)
 endef
 
 # Test and sample selection
@@ -532,7 +536,7 @@ endif
 framework_$(TARGET): framework
 framework: tools package.properties $(HEADER_CONFIG) $(SHELL_CONFIG)
 	$(L) MAKE $@
-	$(Q)$(MAKE) -f Makefile.framework CC=$(TARGET_CC)
+	$(Q)$(MAKE) -f Makefile.framework -e CC=$(TARGET_CC) ARGS=$(TARGET_ARGS) TARGET_ARGS=$(TARGET_ARGS)
 
 .PHONY: system system_$(TARGET)
 system_$(TARGET): system
