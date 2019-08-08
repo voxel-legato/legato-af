@@ -72,9 +72,13 @@ BIN_DIR := $(BUILD_DIR)/bin
 APP_DIR := $(LEGATO_ROOT)/build/$(TARGET)/tools
 LIB_DIR := $(BUILD_DIR)/lib
 
-LOCAL_MKTOOLS_FLAGS = -t $(TARGET)
+LOCAL_MKTOOLS_FLAGS = -t $(TARGET) \
+		   -X "$(TARGET_ARGS)" -C "$(TARGET_ARGS)" \
 
-LOCAL_MKEXE_FLAGS = $(MKEXE_FLAGS) -l $(LIB_DIR) -w $(BUILD_DIR)/tools/$@ $(LOCAL_MKTOOLS_FLAGS)
+
+LOCAL_MKEXE_FLAGS = $(MKEXE_FLAGS) -l $(LIB_DIR) -w $(BUILD_DIR)/tools/$@ $(LOCAL_MKTOOLS_FLAGS) \
+		   --ldflags=-L$(LIB_DIR) --ldflags=-ljansson
+
 LOCAL_MKAPP_FLAGS = $(MKAPP_FLAGS) -o $(APP_DIR) -w $(BUILD_APP_DIR)/tools/$@ $(LOCAL_MKTOOLS_FLAGS)
 LOCAL_PROPRIETARY_APPS_FLAGS = $(LOCAL_MKTOOLS_FLAGS)
 
@@ -108,7 +112,7 @@ $(LIBJANSSON): $(LIB_DIR)
 	$(L) CMAKE $@
 	$(Q)cd $(BUILD_DIR)/libjansson && \
 		cmake $(LEGATO_ROOT)/3rdParty/jansson \
-			-DCMAKE_TOOLCHAIN_FILE=$(LEGATO_ROOT)/cmake/toolchain.yocto.cmake \
+			-DCMAKE_TOOLCHAIN_FILE=$(LEGATO_ROOT)/cmake/toolchain.yocto.cmake  -DTARGET_ARGS="$(TARGET_ARGS)" \
 			-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=$(LIB_DIR) \
 			-DBUILD_SHARED_LIBS=ON \
 			-DJANSSON_BUILD_SHARED_LIBS=ON \
@@ -127,13 +131,15 @@ config: $(LIBJANSSON)
 			--ldflags=-L$(LIB_DIR) \
 			--ldflags=-ljansson \
 			$(LOCAL_MKEXE_FLAGS)
-
+	
 log:
 	$(L) MKEXE $(BIN_DIR)/$@
 	$(Q)mkexe -o $(BIN_DIR)/$@ \
 			$(TOOLS_SRC_DIR)/logTool/logTool.c \
 			-i $(LIBLEGATO_SRC_DIR) \
 			-i $(DAEMON_SRC_DIR)/logDaemon \
+			--ldflags=-L$(LIB_DIR) \
+			--ldflags=-ljansson \
 			$(LOCAL_MKEXE_FLAGS)
 
 sdir:
@@ -142,6 +148,8 @@ sdir:
 			$(TOOLS_SRC_DIR)/sdirTool \
 			-i $(LIBLEGATO_SRC_DIR) \
 			-i $(LIBLEGATO_SRC_DIR)/linux \
+			--ldflags=-L$(LIB_DIR) \
+			--ldflags=-ljansson \
 			-i $(DAEMON_SRC_DIR)/serviceDirectory \
 			--ldflags=-Wl,--enable-new-dtags,-rpath="/legato/systems/current/lib" \
 			$(LOCAL_MKEXE_FLAGS)
@@ -156,6 +164,8 @@ inspect:
 	$(L) MKEXE $(BIN_DIR)/$@
 	$(Q)mkexe -o $(BIN_DIR)/$@ \
 			$(TOOLS_SRC_DIR)/inspect/inspect.c \
+			--ldflags=-L$(LIB_DIR) \
+			--ldflags=-ljansson \
 			-i $(LIBLEGATO_SRC_DIR) \
 			-i $(LIBLEGATO_SRC_DIR)/linux \
 			-i $(DAEMON_SRC_DIR) \
