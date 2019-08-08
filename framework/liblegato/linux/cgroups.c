@@ -28,7 +28,7 @@ static const char* SubSysName[CGRP_NUM_SUBSYSTEMS] = {"cpu,cpuacct", "memory", "
  */
 //--------------------------------------------------------------------------------------------------
 #define ROOT_PATH                   "/sys/fs/cgroup"
-#define ROOT_NAME                   "cgroupsRoot"
+#define ROOT_NAME                   "tmpfs"
 
 
 //--------------------------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ static bool IsAllSubSysMounted
 
         LE_ASSERT(le_path_Concat("/", dir, sizeof(dir), SubSysName[subSys], (char*)NULL) == LE_OK);
 
-        if (!fs_IsMounted(SubSysName[subSys], dir))
+        if (!fs_IsMounted("cgroup", dir))
         {
             return false;
         }
@@ -131,18 +131,29 @@ static void MountSubSys
 {
     // Setup a separate cgroup hierarchy for each supported subsystem.
     cgrp_SubSys_t subSys = 0;
+    LE_INFO("MOUNTSUBSYS start \n");
+
     for (; subSys < CGRP_NUM_SUBSYSTEMS; subSys++)
     {
         char dir[LIMIT_MAX_PATH_BYTES] = ROOT_PATH;
 
         LE_ASSERT(le_path_Concat("/", dir, sizeof(dir), SubSysName[subSys], (char*)NULL) == LE_OK);
 
-        LE_ASSERT(le_dir_Make(dir, S_IRWXU) != LE_FAULT);
+	LE_INFO("MOUNTSUBSYS chk %d  %s %s \n", subSys, SubSysName[subSys], dir);
+	
+	if (!fs_IsMounted("cgroup", dir)) {
+	  LE_ASSERT(le_dir_Make(dir, S_IRWXU) != LE_FAULT);
 
-        LE_FATAL_IF(mount(SubSysName[subSys], dir, "cgroup", 0, SubSysName[subSys]) != 0,
+	  LE_INFO("MOUNTSUBSYS chk %d  %s not mounted %s \n", subSys, SubSysName[subSys], dir);
+	  /*
+	  LE_FATAL_IF(mount("cgroup" , dir, "cgroup", 0, SubSysName[subSys]) != 0,
                     "Could not mount cgroup subsystem '%s'.  %m.", SubSysName[subSys]);
 
-        LE_INFO("Mounted cgroup hierarchy for subsystem '%s'.", SubSysName[subSys]);
+	  LE_INFO("Mounted cgroup hierarchy for subsystem '%s'.", SubSysName[subSys]);
+	  */
+	} else {
+	  LE_INFO("MOUNTSUBSYS chk %d  %s --- mounted \n", subSys, SubSysName[subSys]);
+	}
     }
 }
 
@@ -165,9 +176,11 @@ void cgrp_Init
     // Setup the cgroup root directory if it does not already exist.
     if (!fs_IsMounted(ROOT_NAME, ROOT_PATH))
     {
+      LE_INFO("cgrp_Init IGNORE ROOT\n");
+      /*
         LE_FATAL_IF(mount(ROOT_NAME, ROOT_PATH, "tmpfs", 0, NULL) !=0,
                         "Could not mount cgroup root file system. %m.");
-
+      */
         MountSubSys();
     }
     else
