@@ -863,6 +863,12 @@ static WatchdogObj_t* CreateNewWatchdog
 
     // First see if there's a mandatory watchdog
     memset(&key, 0, sizeof(key));
+
+    if (LE_OK != le_appInfo_GetName(clientPid, key.appName, sizeof(key.appName)) ) {
+	LE_WARN("cannot get name for app -- ignoring! pid %d\n", clientPid);
+	return NULL;
+    }
+    
     LE_ASSERT(LE_OK == le_appInfo_GetName(clientPid, key.appName, sizeof(key.appName)));
     LE_ASSERT(LE_OK == GetProcessNameFromPid(clientPid, key.procName, sizeof(key.procName)));
     mandatoryWdogPtr = le_hashmap_Get(MandatoryWatchdogRefs, &key);
@@ -1012,7 +1018,9 @@ static WatchdogObj_t* GetClientWatchdogPtr
         if (watchdogPtr == NULL)
         {
             watchdogPtr = CreateNewWatchdog(clientProcId);
-            AddWatchdog(watchdogPtr);
+	    if (watchdogPtr) {
+		AddWatchdog(watchdogPtr);
+	    }
         }
     }
     else
