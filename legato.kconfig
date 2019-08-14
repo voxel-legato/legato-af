@@ -70,7 +70,14 @@ config TARGET_VIRT_ARM
 config TARGET_RASPI
   bool "Raspberry Pi (raspi)"
   ---help---
-  Run on a Raspberry Pi.
+  Run on a Raspberry Pi or custom board.
+
+config TARGET_RASPI_COLIBRI_IMX6
+  bool "Colibri i.MX6 board"
+  default y
+  depends on TARGET_RASPI
+  ---help---
+  Run on a Toradex Colibri i.MX6 board, compiled via an external yocto SDK.
 
 config TARGET_AR7
   bool "SWI AR755x (ar7)"
