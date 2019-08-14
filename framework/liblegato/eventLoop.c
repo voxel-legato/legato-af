@@ -1149,6 +1149,9 @@ le_event_HandlerRef_t _le_event_AddLayeredHandler
 
     event_Unlock(oldState);
 
+    if (eventPtr == NULL) {
+	LE_ERROR("le_event_AddLayeredHandler Lookup for event handler %s failed!", name);
+    }
     LE_ASSERT(eventPtr != NULL);
 
     // Get a pointer to the thread-specific event data record for the calling thread.
