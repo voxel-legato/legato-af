@@ -305,6 +305,16 @@ static const FileLinkObj_t DefaultSystemLinks[] =
 {
     {.src = "/lib/ld-linux.so.3", .dest = "/lib/"},
     {.src = "/lib/ld-linux-armhf.so.3", .dest = "/lib/"},
+
+#ifdef LE_CONFIG_TARGET_RASPI_COLIBRI_IMX6
+    {.src = "/lib/libc.so.6", .dest = "/lib/"},
+    {.src = "/lib/libpthread.so.0", .dest = "/lib/"},
+    {.src = "/lib/librt.so.1", .dest = "/lib/"},
+    {.src = "/lib/libdl.so.2", .dest = "/lib/"},
+    {.src = "/lib/libgcc_s.so.1", .dest = "/lib/"},
+    {.src = "/lib/libm.so.6", .dest = "/lib/"},
+    {.src = "/usr/lib/libstdc++.so.6", .dest = "/lib/"}
+#else
     {.src = "/lib/arm-linux-gnueabihf/libc.so.6", .dest = "/lib/"},
     {.src = "/lib/arm-linux-gnueabihf/libpthread.so.0", .dest = "/lib/"},
     {.src = "/lib/arm-linux-gnueabihf/librt.so.1", .dest = "/lib/"},
@@ -312,6 +322,7 @@ static const FileLinkObj_t DefaultSystemLinks[] =
     {.src = "/lib/arm-linux-gnueabihf/libgcc_s.so.1", .dest = "/lib/"},
     {.src = "/lib/arm-linux-gnueabihf/libm.so.6", .dest = "/lib/"},
     {.src = "/usr/lib/arm-linux-gnueabihf/libstdc++.so.6", .dest = "/lib/"}
+#endif
 };
 
 #else
