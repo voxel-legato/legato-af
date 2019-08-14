@@ -2354,6 +2354,7 @@ static le_result_t CreateDefaultLinks
         if (CreateFileLink(appRef, appDirLabelPtr,
                            DefaultLinks[i].src, DefaultLinks[i].dest) != LE_OK)
         {
+	    LE_CRIT("Could not create file link %s -> %s", DefaultLinks[i].src, DefaultLinks[i].dest);
             return LE_FAULT;
         }
     }
@@ -2364,6 +2365,7 @@ static le_result_t CreateDefaultLinks
         if (CreateFileLink(appRef, appDirLabelPtr, DefaultSystemLinks[i].src,
                            DefaultSystemLinks[i].dest) != LE_OK)
         {
+	    LE_CRIT("Could not create file link %s -> %s", DefaultSystemLinks[i].src,  DefaultSystemLinks[i].dest);
             return LE_FAULT;
         }
     }
