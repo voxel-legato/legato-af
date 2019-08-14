@@ -161,6 +161,7 @@ ifneq ($(LE_CONFIG_ENABLE_SMACK),y)
   SYSTOIMG_FLAGS += --disable-smack
 endif
 
+
 # Build AV model for appropriate targets
 ifeq ($(LE_CONFIG_AVC_ENABLE_AV_MODEL),y)
   STAGE_MKAVMODEL := stage_mkavmodel
@@ -229,7 +230,7 @@ ifneq ($(TARGET),nothing)
     endif
   endif # end not localhost
 
-  export TARGET_ARGS := "-march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard "
+  export TARGET_ARGS = "-march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard "
 
   # Target compiler variables
   export TARGET_CC                       ?= $(TOOLCHAIN_DIR)/$(TOOLCHAIN_PREFIX)$(CC_NAME)
@@ -367,7 +368,7 @@ FRAMEWORK_SOURCES = framework/                    \
 # Generator for making Legato systems
 define sysmk
 	$(L) MKSYS $(2)
-	$(Q)mksys -v -t $(TARGET) -w $(1) -o build/$(TARGET) $(2) $(3) $(MKSYS_FLAGS)
+	$(Q)mksys -t $(TARGET) -w $(1) -o build/$(TARGET) $(2) $(3) $(MKSYS_FLAGS)
 endef
 
 # Test and sample selection
