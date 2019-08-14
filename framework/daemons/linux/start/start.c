@@ -2235,18 +2235,25 @@ int main
     bool isReadOnly = sysStatus_IsReadOnly();
     le_thread_Ref_t modemPAThread;
     le_clk_Time_t timeToWait = {10, 0}; // 10s timeout waiting for Modem PA loading thread
-
+#if defined(LE_CONFIG_TARGET_RASPI_COLIBRI_IMX6)
     if (!isReadOnly)
     {
         // Bind mount if they are not already mounted.
         BindMount("/mnt/flash/legato", "/legato");
-        BindMount("/mnt/flash/home", "/home");
+    }
+    // keep home as it is.
+#else
+    if (!isReadOnly)
+    {
+        // Bind mount if they are not already mounted.
+        BindMount("/mnt/flash/legato", "/legato");
+	BindMount("/mnt/flash/home", "/home");
     }
     if (0 == access("/home", W_OK))
     {
         MakeDir("/home/root");
     }
-
+#endif
     daemon_Daemonize(5000); // 5 second timeout in case older supervisor is installed.
 
     ModemPASemRef = le_sem_Create("ModemPA", 0);
@@ -2276,6 +2283,7 @@ int main
         // script that makes legato use the wrong liblegato path.
         FixLdSoConf();
 
+	LE_INFO("START::: LAUNCHING!\n");
         // Run the current system.
         Launch(isReadOnly);
     }
