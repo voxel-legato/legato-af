@@ -82,4 +82,8 @@ requires:
         $LEGATO_MODEM_PA_ECALL_DEFAULT
         $LEGATO_MODEM_PA_ECALL
     }
+    lib:
+    {
+        libjansson.so
+    }
 }
