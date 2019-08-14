@@ -2402,6 +2402,9 @@ static le_result_t CreateLibBinLinks
         return LE_FAULT;
     }
 
+    // always link in the legato library
+    CreateFileLink(appRef, appDirLabelPtr, CURRENT_SYSTEM_PATH "/lib/liblegato.so" ,"/lib");
+
     // Create links to the apps bin directory.
     char srcBin[LIMIT_MAX_PATH_BYTES] = "";
 
