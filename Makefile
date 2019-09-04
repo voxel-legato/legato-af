@@ -231,6 +231,7 @@ ifneq ($(TARGET),nothing)
   endif # end not localhost
 
   export TARGET_ARGS = "-march=armv7-a -mthumb -mfpu=neon -mfloat-abi=hard "
+  export TARGET_ARGS
 
   # Target compiler variables
   export TARGET_CC                       ?= $(TOOLCHAIN_DIR)/$(TOOLCHAIN_PREFIX)$(CC_NAME)
@@ -322,7 +323,7 @@ ifeq ($(LE_CONFIG_TEST_COVERAGE),y)
   export TEST_COVERAGE_DIR := $(LE_CONFIG_TEST_COVERAGE_DIR)
 endif
 
-MKSYS_FLAGS += -C $(TARGET_ARGS)
+MKSYS_FLAGS += -C $(TARGET_ARGS) -X $(TARGET_ARGS)
 
 # PlantUML file path
 PLANTUML_PATH ?= $(LEGATO_ROOT)/3rdParty/plantuml
@@ -485,6 +486,8 @@ platformAdaptor modules:
 # Generate an MD5 hash of everything in the source directories.
 .PHONY: sources.md5
 sources.md5: $(FRAMEWORK_SOURCES)
+
+xsources.md5: $(FRAMEWORK_SOURCES)
 	$(L) GEN $@
 	$(Q)find $(FRAMEWORK_SOURCES) -type f | grep -v ".git" | sort | while read filePath ; \
 	do \
